@@ -7,7 +7,6 @@ window = display.set_mode((WIDTH, HEIGHT))
 display.set_caption("Ping Pong")
 
 background = transform.scale(image.load("background.jpg"), (WIDTH, HEIGHT))
-ball_img = transform.scale(image.load("ball.png"), (50, 50))
 
 clock = time.Clock()
 FPS = 60
@@ -38,8 +37,9 @@ class Racket:
 
 
 class Ball:
-    def __init__(self, x, y, speed_x, speed_y):
-        self.rect = Rect(x, y, 100, 100)
+    def __init__(self, x, y, radius, speed_x, speed_y):
+        self.radius = radius
+        self.rect = Rect(x, y, radius * 2, radius * 2)
         self.speed_x = speed_x
         self.speed_y = speed_y
 
@@ -55,12 +55,17 @@ class Ball:
             self.speed_x *= -1
 
     def draw(self):
-        window.blit(ball_img, (self.rect.x, self.rect.y))
+        draw.circle(
+            window,
+            (255, 255, 255),
+            (self.rect.centerx, self.rect.centery),
+            self.radius
+        )
 
 
-left_racket = Racket(10, 200, 20, 100, 7)
-right_racket = Racket(670, 200, 20, 100, 5)
-ball = Ball(WIDTH // 2, HEIGHT // 2, 7, 7)
+left_racket = Racket(10, 200, 20, 100, 10)
+right_racket = Racket(670, 200, 20, 100, 10)
+ball = Ball(WIDTH // 2, HEIGHT // 2, 25, 10, 10)
 
 game = True
 result_text = None
@@ -79,17 +84,17 @@ while game:
     ball.bounce(left_racket, right_racket)
 
     if ball.rect.left <= 0:
-        result_text = lose_font.render("BLUE WIN", True, (0, 0, 255))
+        result_text = lose_font.render("LOSE", True, (255, 0, 0))
         game = False
 
     if ball.rect.right >= WIDTH:
-        result_text = lose_font.render("RED WIN!", True, (255, 0, 0))
+        result_text = lose_font.render("WIN!", True, (255, 255, 0))
         game = False
 
     window.blit(background, (0, 0))
 
-    left_racket.draw((255, 0, 0))
-    right_racket.draw((0, 0, 255))
+    left_racket.draw((84, 0, 120))
+    right_racket.draw((2, 207, 230))
     ball.draw()
 
     display.update()
@@ -102,6 +107,5 @@ if result_text:
     window.blit(result_text, (180, 220))
 
 display.update()
-
 time.delay(3000)
 quit()
